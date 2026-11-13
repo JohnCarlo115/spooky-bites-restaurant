@@ -1,0 +1,121 @@
+// Configuration
+const restaurantName = "Spooky Bites";
+let isOpen = true;
+let customerName = "";
+let mealPrice = 0;
+let quantity = 1;
+let total = 0;
+
+const prices = {
+    "Spider Pizza": 150,
+    "Pumpkin Pasta": 180,
+    "Ghost Burger": 120
+};
+
+// DOM Element
+const statusElement = document.getElementById("status");
+const resultElement = document.getElementById("result");
+const customerInput = document.getElementById("customer");
+const mealSelect = document.getElementById("meal");
+const quantityInput = document.getElementById("quantity");
+const orderBtn = document.getElementById("orderBtn");
+const greetingBtn = document.getElementById("greetingBtn");
+const toggleStatusBtn = document.getElementById("toggleStatusBtn");
+
+// Display & Dynamic Status Management
+function displayStatus() {
+    if (isOpen) {
+        statusElement.textContent = "We are OPEN!";
+        statusElement.style.color = "#004d1a";
+    } else {
+        statusElement.textContent = "We are CLOSED!";
+        statusElement.style.color = "#800000";
+    }
+}
+
+function toggleRestaurantStatus() {
+    isOpen = !isOpen;
+    displayStatus();
+}
+
+// Enhancements implementation
+function generateGreeting() {
+    const name = customerInput.value.trim();
+    if (!name) {
+        alert("Please enter your name first!");
+        return;
+    }
+    alert(`Spooky Greetings, ${name}! Welcome to ${restaurantName}! 🎃👻`);
+}
+
+function recommendMeal(subtotal) {
+    if (subtotal < 200) {
+        return "Recommendation: Add a Ghost Burger to complete your feast!";
+    } else {
+        return "Recommendation: You've unlocked our Chef's Special Spooky Drink!";
+    }
+}
+
+function placeOrder() {
+    customerName = customerInput.value.trim();
+    const selectedMeal = mealSelect.value;
+    quantity = Number(quantityInput.value);
+
+    // Validation
+    if (!customerName) {
+        resultElement.textContent = "Please enter your name first!";
+        return;
+    }
+
+    if (!Number.isInteger(quantity) || quantity < 1) {
+        resultElement.textContent = "Please enter a valid quantity.";
+        return;
+    }
+
+    if (!isOpen) {
+        resultElement.textContent = "Sorry! The restaurant is currently closed.";
+        return;
+    }
+
+    // Confirmation Box
+    const confirmChoice = confirm(`Confirm order for ${quantity} x ${selectedMeal}?`);
+    if (!confirmChoice) {
+        resultElement.textContent = "Order process cancelled.";
+        return;
+    }
+
+    // Calculation & Discount
+    mealPrice = prices[selectedMeal];
+    let subtotal = mealPrice * quantity;
+    let discount = 0;
+
+    if (subtotal >= 300) {
+        discount = subtotal * 0.10; // 10% Discount
+    }
+
+    total = subtotal - discount;
+
+    const recommendation = recommendMeal(subtotal);
+
+    // Display
+    resultElement.innerHTML = `
+        <strong>Thank you, ${customerName}!</strong><br>
+        Order: ${quantity} x ${selectedMeal}(s)<br>
+        Subtotal: ₱${subtotal.toFixed(2)}<br>
+        ${discount > 0 ? `Discount (10%): -₱${discount.toFixed(2)}<br>` : ''}
+        <strong>Final Total: ₱${total.toFixed(2)}</strong><br>
+        <em>${recommendation}</em><br>
+        Enjoy your spooky meal! 🎃
+    `;
+}
+
+function showMenuMessage() {
+    alert(`Welcome to ${restaurantName}! Choose your spooky meal from our menu below.`);
+}
+
+// Event Listeners
+displayStatus();
+orderBtn.addEventListener("click", placeOrder);
+greetingBtn.addEventListener("click", generateGreeting);
+toggleStatusBtn.addEventListener("click", toggleRestaurantStatus);
+document.querySelector('a[href="#menu"]').addEventListener("click", showMenuMessage);
